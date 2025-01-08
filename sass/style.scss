@@ -1,0 +1,1207 @@
+// マップの機能を使う
+@use "sass:map";
+
+$main-color: #3ea1d1; //　メインカラー
+$text-color: #333333; // テキスト文字色
+
+$font-base: "Noto Serif JP", serif; // フォント
+
+$header-height-sp: 60px; // SP時のヘッダーの高さ
+$header-height-pc: 70px; // PC時のヘッダーの高さ
+
+// ブレイクポイントをマップ型の変数で定義する
+// マップ型・・・変数の中に1つ以上のキーと値のペアを定義できるデータタイプ。連想配列みたいに扱うことができる。
+$breakpoints: (
+  sm: "screen and (min-width: 600px)",
+  md: "screen and (min-width: 768px)",
+  lg: "screen and (min-width: 900px)",
+  xl: "screen and (min-width: 1200px)",
+);
+
+// mixinでメディアクエリを呼び出す
+// mixinの引数$breakpointには初期値としてmdを設定する。ここにはメインで使うブレイクポイントを指定する。
+// map-get()の第一引数に変数名、第二引数にマップ型のキーを渡すと、マップ型の値が返る
+// #{}・・・インターポーレーション
+@mixin mq($breakpoint: md) {
+  @media #{map.get($breakpoints, $breakpoint)} {
+    @content;
+  }
+}
+
+// スムーススクロール
+html {
+  scroll-behavior: smooth; // スムーススクロール
+  scroll-padding-top: $header-height-sp;
+
+  @include mq(md) {
+    scroll-padding-top: $header-height-pc;
+  }
+}
+
+// 共通
+body {
+  font-family: $font-base; // 標準のフォント
+  color: $text-color; // 標準の文字色
+  font-size: 16px; // 標準の文字サイズ
+  line-height: 1.7; // 行の高さ（行間）
+  font-weight: 300; // フォントの太さ
+}
+
+// 共通クラス
+// インナー
+.inner {
+  padding-inline: 15px;
+
+  @include mq(md) {
+    max-width: calc(
+      1200px + 40px * 2
+    ); // コンテンツ幅（1200px）と余白（左右各40px）を明確に分けて管理できる
+    margin-inline: auto; // ブロック要素の左右中央寄せ
+    padding-inline: 40px; // 左右の余白
+  }
+}
+
+//　ボタン
+.button {
+  display: inline-block; // 通常の<a>タグはdisplay: inline;がデフォルトで、幅や高さを設定できません。inline-blockを使うと、paddingやmin-widthでサイズを調整でき、見た目がボタンのようになる。
+  min-width: 158px;
+  padding: calc(12px - 1px);
+  text-align: center;
+  border: 1px solid $main-color;
+  background: #fff;
+  color: $main-color; // 文字色
+  font-size: 14px;
+  letter-spacing: 0.02px;
+  transition: color 0.3s, background-color 0.3s;
+
+  &:hover {
+    background-color: $main-color;
+    color: #fff;
+  }
+}
+
+.section {
+}
+
+.section__head {
+}
+
+// heading（見出し）とcontentの間の余白
+.section__content {
+  margin-top: 46px;
+
+  @include mq(md) {
+    margin-top: 64px;
+  }
+}
+
+// 見出し
+.heading {
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 100%;
+  display: flex; // 子要素を横並びにする
+  flex-direction: column; // 子要素を上から下への縦並びにする。
+  align-items: center; // 上記で指定した縦並びの要素に対して、垂直の方向（横並び）で中央寄せにする
+  gap: 27px; // flexbox間の余白
+
+  // 見出しの下線
+  &::after {
+    content: ""; /* 擬似要素の中身を空にする */
+    width: 60px; /* 下線の幅（下線の長さ） */
+    height: 1px; /* 下線の太さ */
+    background: $main-color; /* 下線の色 */
+  }
+
+  @include mq(md) {
+    font-size: 40px;
+    gap: 24px;
+  }
+}
+
+// brタグによる改行（widthが599px以下の時は改行しない）
+@include mq(sm) {
+  .hidden-md {
+    display: none;
+  }
+}
+
+@include mq(md) {
+  .hidden-md {
+    display: none;
+  }
+}
+
+@include mq(lg) {
+  .hidden-md {
+    display: none;
+  }
+}
+
+@include mq(xl) {
+  .hidden-md {
+    display: none;
+  }
+}
+
+// 記号の間隔を調整
+.symbol-spacing {
+  letter-spacing: 0.05em;
+}
+
+// ヘッダー
+.header {
+  width: 100%;
+  height: $header-height-sp;
+  position: sticky; // 追従させる
+  top: 0;
+  left: 0; // 親要素と同じ幅の時は指定しなくても良い
+  z-index: 20;
+  background: #fff;
+
+  @include mq(md) {
+    height: $header-height-pc;
+  }
+}
+
+.header__inner {
+  height: inherit; // headerの高さを継承する
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header__logo {
+  a {
+    img {
+      width: 120px;
+      display: block;
+    }
+
+    @include mq(md) {
+      transition: opacity 0.3s;
+
+      &:hover {
+        opacity: 0.6;
+      }
+    }
+  }
+}
+
+.header__icon {
+  @include mq(md) {
+    display: none; // ハンバーガーメニューの線を非表示にする
+  }
+}
+
+.drawer-icon {
+  width: 30px;
+  height: 18px;
+  position: relative;
+
+  // .drawer-iconクラス.is-checkedクラスが付与された時
+  &.is-checked {
+    .drawer-icon__bar {
+      &:nth-child(1),
+      &:nth-child(3) {
+        top: 9px; // 1番目と3番目の線を中央に移動させる
+      }
+
+      &:nth-child(1) {
+        transform: rotate(45deg); // 線を右に45度回転
+      }
+
+      &:nth-child(2) {
+        display: none; // 2番目の線を非表示
+      }
+
+      &:nth-child(3) {
+        transform: rotate(-45deg); // 線を左に45度回転
+      }
+    }
+  }
+}
+
+.drawer-icon__bar {
+  position: absolute;
+  width: 30px;
+  height: 2px;
+  left: 0;
+  background: $main-color;
+  transition: top 0.4s, transform 0.4s; // .drawer-iconクラスから.is-checkedクラスが外れた時にデフォルトの状態（アニメーション前）に戻す。
+
+  &:nth-child(1) {
+    top: 0;
+  }
+
+  &:nth-child(2) {
+    top: 8px;
+  }
+
+  &:nth-child(3) {
+    top: 16px;
+  }
+}
+
+.header__nav {
+  background: $main-color;
+  width: 270px;
+  height: calc(100% - $header-height-sp);
+  position: fixed;
+  right: 0;
+  top: $header-height-sp;
+  padding: calc(40px - 8px) 15px; // padding-block: 8px;分を引く
+  transform: translateX(100%); //　右に100%移動させる
+  transition: transform 0.4s;
+
+  &.is-checked {
+    transform: translateX(0); // 移動させない
+  }
+
+  @include mq(md) {
+    background: transparent; // 背景を透明
+    width: auto; // spの幅の固定値をリセット
+    height: auto; // spの高さの固定値をリセット
+    position: static; // 位置指定をリセット
+    padding: 0;
+    transform: translateX(0);
+  }
+}
+
+.header__lists {
+  display: flex;
+  flex-direction: column; // flexboxの要素を上から下への縦並び
+  align-items: flex-end; // flexboxの要素を右端に配置する
+  gap: calc(32px - 8px * 2); // padding-block: 8px;分を引く
+
+  @include mq(md) {
+    flex-direction: row;
+    align-items: center;
+    gap: 46px;
+  }
+}
+
+.header__list {
+  // ここにスタイルを追加
+}
+
+.header__link {
+  display: inline-block;
+  padding-block: 8px; // 上下にpadding: 8px;を指定する。linkがクリックできる範囲を広げるため。
+  color: #ffffff;
+  font-size: 18px;
+  transition: color 0.3s;
+
+  @include mq(md) {
+    color: $text-color;
+    font-size: 16px;
+
+    &:hover {
+      color: $main-color;
+    }
+  }
+}
+
+.main {
+  display: grid; // グリッドレイアウト（グリッドコンテナ）を作成する
+  //  display: flex;
+  //  flex-direction: column;
+  gap: 96px; // グリッドアイテム（.mainの子要素）同士の隙間を設定する
+
+  @include mq(md) {
+    gap: 160px;
+  }
+}
+
+// ファーストビュー
+.fv {
+}
+
+.fv__inner {
+  position: relative;
+}
+
+.fv__image {
+  @include mq(md) {
+    max-width: 990px;
+    margin-left: auto; // 画像を右寄せにする
+    display: block;
+  }
+
+  img {
+  }
+}
+
+.fv__message {
+  margin-top: 30px;
+
+  @include mq(md) {
+    position: absolute;
+    inset-block: 0; // top:0; bottom:0を指定している。inset-block: 0;は、要素を親要素の上端と下端にぴったりとくっつけることを意味する。これにより、要素が親要素（.fv__inner）の上下の端に配置され、margin-block: auto;を使用することで、要素が上下中央に寄せられます。
+    margin-block: auto; // 上下中央寄せ
+    left: 0; // 左寄せ
+    padding-block: 80px;
+    padding-inline: 40px;
+    height: fit-content; // コンテンツ（中身（テキストなど）の高さに合わせる。これを指定しないと親要素の高さになる。
+    background: #fff;
+  }
+}
+
+.fv__title {
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.7; // 親要素（body）からの継承がされない場合は再度指定する。
+
+  br {
+    display: none; // SP時は改行しない
+
+    @include mq(md) {
+      display: inline;
+    }
+  }
+}
+
+.fv__text {
+  margin-top: 16px;
+
+  @include mq(md) {
+  }
+}
+
+.concept {
+}
+
+.concept__inner {
+}
+
+.concept__content {
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+  // margin-top: 46px; // 共通クラス（section__content）を指定した
+
+  @include mq(md) {
+    flex-direction: row;
+    align-items: center;
+    gap: calc(80px / 1200px * 100%); // 画面幅に応じて余白を柔軟に調節できる
+  }
+}
+
+.concept__image {
+  text-align: center; // インライン要素（画像）の中央寄せ
+
+  @include mq(md) {
+    width: calc(600px / 1200px * 100%);
+    flex-shrink: 0; // 画面幅が狭くなっても画像の幅が縮小されないようにする
+  }
+
+  img {
+    width: 100%;
+  }
+}
+
+.concept__message {
+  @include mq(md) {
+    flex-grow: 1; // 残りの空きスペースを全て使用する
+  }
+}
+
+.concept__title {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.7;
+
+  // 見出し（concept__title）が769〜818pxでは改行される。改行をさせないために文字の大きさを小さくする。
+  @include mq(md) {
+    font-size: 18px;
+  }
+
+  // 改行されない幅になったら元の文字の大きさに戻す。
+  @include mq(lg) {
+    font-size: 20px;
+  }
+}
+
+.concept__text {
+  margin-top: 20px;
+  font-weight: 300;
+
+  @include mq(md) {
+    margin-top: 39px;
+  }
+}
+
+.feature {
+}
+
+.feature__inner {
+}
+
+.feature__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 49px; // 子要素のfeature__card間の余白
+
+  @include mq(md) {
+    flex-direction: row;
+    gap: 40px;
+  }
+
+  @include mq(lg) {
+    gap: 60px;
+  }
+
+  @include mq(xl) {
+    gap: 90px;
+  }
+}
+
+.feature__card {
+  background: #fff;
+  box-shadow: 3px 3px 15px 0px rgba(96, 96, 96, 0.16);
+}
+
+.feature-card {
+  @include mq(md) {
+    flex: 1; // 子要素の幅を均等にする
+  }
+}
+
+.feature-card__image {
+  text-align: center;
+
+  img {
+    width: 100%;
+  }
+}
+
+.feature-card__body {
+  font-weight: 600;
+  text-align: center;
+  padding-block: 26px;
+}
+
+.about {
+  background-image: url("../img/sp/about-bg.jpg");
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: cover;
+  position: relative;
+  padding-block: 181px 50px;
+
+  @include mq(md) {
+    background-image: url("../img/about-bg.jpg");
+    padding-block: 123px 122px;
+  }
+
+  &::after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.12);
+    z-index: 1;
+  }
+}
+
+.about__inner {
+}
+
+// 文字を背景画像の上に表示する
+.about__content {
+  position: relative;
+  z-index: 2;
+  color: #fff;
+
+  @include mq(md) {
+    width: calc(600px / 1200px * 100%); // contentの中身の幅を指定する
+    margin-inline-end: auto; // contentの中身を左寄せにする。（contentの中身幅以外は余白にする。）
+  }
+}
+
+.about__title {
+  font-size: 20px;
+  font-weight: 600;
+
+  @include mq(md) {
+    font-size: 22px;
+  }
+}
+
+.about__text {
+  margin-top: 25px;
+  font-size: 14px;
+  font-weight: 600;
+
+  @include mq(md) {
+    margin-top: 22px;
+    font-size: 16px;
+  }
+}
+
+.products {
+}
+
+.products__inner {
+  padding-inline: 56px;
+
+  @include mq(md) {
+    max-width: calc(940px + 40px * 2); // 要素の最大幅 ＋ padding
+    padding-inline: 40px;
+  }
+}
+
+.products__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 41px; // 子要素のfeature__card間の余白
+
+  @include mq(md) {
+    flex-direction: row;
+    gap: 60px;
+  }
+
+  @include mq(lg) {
+    gap: 70px;
+  }
+
+  @include mq(xl) {
+    gap: 80px;
+  }
+}
+
+.products__card {
+  @include mq(md) {
+    flex: 1; // 子要素の幅を均等にする;
+  }
+}
+
+.products-card {
+  // PC時、products-cardがhoverした時の画像を拡大する
+  @include mq(md) {
+    &:hover {
+      .products-card__image {
+        img {
+          transform: scale(1.1); // 画像を1.1倍に拡大する
+        }
+      }
+    }
+  }
+}
+
+.products-card__image {
+  text-align: center;
+
+  img {
+    width: 100%;
+  }
+
+  @include mq(md) {
+    overflow: hidden; // 拡大した画像を親要素からはみ出さないようにする
+
+    img {
+      transition: transform 0.5s; // 画像の拡大のアニメーション
+    }
+  }
+}
+
+.products-card__body {
+  margin-top: 20px;
+
+  @include mq(md) {
+    margin-top: 18px;
+  }
+}
+
+.products-card__title {
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.products-card__price {
+  font-size: 14px;
+  color: #989898;
+  font-weight: 300;
+  margin-top: 10px;
+}
+
+.products__button {
+  margin-top: 42px;
+  text-align: center;
+
+  @include mq(md) {
+    margin-top: 44px;
+  }
+}
+
+.news {
+}
+
+.news__inner {
+  @include mq(md) {
+    max-width: calc(1040px + 40px * 2); // 要素の最大幅 ＋ padding
+    padding-inline: 40px;
+  }
+}
+
+.news__cards {
+}
+
+// articleタグ
+.news__card {
+  display: flex;
+  flex-direction: column;
+  gap: 27px; // 子要素のnews__card間の余白
+
+  @include mq(md) {
+    gap: 23px;
+    margin-top: -1px;
+  }
+
+  @include mq(lg) {
+  }
+
+  @include mq(xl) {
+  }
+}
+
+// aタグ
+.news-card {
+  padding-bottom: calc(28px - 1px); /* ボーダーとコンテンツの間に余白を追加 */
+  border-bottom: 1px solid #e0e0e0; /* 下にボーダーを追加 */
+
+  @include mq(md) {
+    padding-bottom: calc(24px - 1px);
+    display: flex;
+    align-items: flex-start; // flexboxの要素を上端に揃える
+    gap: 40px;
+
+    &:hover {
+      .news-card__image {
+        img {
+          transform: scale(1.1); // 画像を1.1倍に拡大する
+        }
+      }
+    }
+  }
+}
+
+.news-card__image {
+  text-align: center;
+
+  @include mq(md) {
+    width: calc(260px / 1040px * 100%);
+    flex-shrink: 0; // 画面幅が狭くなっても画像の幅が縮小されないようにする
+    height: auto;
+    overflow: hidden; // 拡大した画像を親要素からはみ出さないようにする
+
+    img {
+      transition: transform 0.5s; // 画像の拡大のアニメーション
+    }
+  }
+
+  img {
+    width: 100%;
+  }
+}
+
+.news-card__body {
+  margin-top: 15px;
+
+  @include mq(md) {
+    margin-top: 0px;
+    flex-grow: 1; // 残りの空きスペースを全て使用する
+  }
+}
+
+.news-card__time {
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.news-card__title {
+  margin-top: 8px;
+  font-weight: 600;
+
+  @include mq(md) {
+    margin-top: 16px;
+    font-size: 18px;
+  }
+}
+
+.news-card__text {
+  margin-top: 14px;
+  color: #888;
+  font-size: 14px;
+  font-weight: 300;
+
+  @include mq(md) {
+    margin-top: 10px;
+  }
+}
+
+.news__button {
+  margin-top: 42px;
+  text-align: center;
+
+  @include mq(md) {
+    margin-top: 44px;
+  }
+}
+
+.concept2 {
+}
+
+.concept2__inner {
+}
+
+.concept2__content {
+  display: flex;
+  flex-direction: column;
+  gap: 35px;
+
+  @include mq(md) {
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 40px;
+  }
+
+  @include mq(lg) {
+    gap: 60px;
+  }
+
+  @include mq(xl) {
+    gap: 80px;
+  }
+}
+
+.concept2__image {
+  text-align: center; // インライン要素（画像）の中央寄せ
+
+  @include mq(md) {
+    width: calc(600px / 1200px * 100%);
+    flex-shrink: 0; // 画面幅が狭くなっても画像の幅が縮小されないようにする
+  }
+
+  img {
+    width: 100%;
+  }
+}
+
+.concept2__message {
+  @include mq(md) {
+    flex-grow: 1; // 残りの空きスペースを全て使用する
+  }
+}
+
+.concept2__title {
+  font-size: 20px;
+  font-weight: 600;
+
+  @include mq(md) {
+    font-size: 22px;
+  }
+
+  @include mq(lg) {
+    font-size: 25px;
+  }
+
+  @include mq(xl) {
+    font-size: 28px;
+  }
+}
+
+.concept2__text {
+  margin-top: 21px;
+  font-size: 14px;
+  font-weight: 300;
+
+  @include mq(md) {
+    margin-top: 36px;
+    font-size: 16px;
+  }
+}
+
+.contact {
+  padding-block: 56px;
+  background-image: url("../img/contact_bg.jpg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+
+  @include mq(md) {
+    padding-block: 80px;
+  }
+}
+
+.contact__inner {
+  @include mq(md) {
+    max-width: calc(510px + 40px * 2); // 要素の最小幅 ＋ padding
+    padding-inline: 40px;
+  }
+}
+
+.contact__head {
+  color: $main-color;
+}
+
+.contact__form {
+  @include mq(md) {
+    margin-top: calc(64px + 2px);
+  }
+}
+
+.contact__text {
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+
+  // .contact__textの色を変える。JavaScriptで操作されるような「状態」を表すようなModifierについては、SMACSSのステート（状態）カテゴリーの命名を元に、is-requiredという状態クラス名にすることもできる。
+  .contact__text--required {
+    color: #e7728e;
+  }
+}
+
+.contact__items {
+  margin-top: 29px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+
+  @include mq(md) {
+    margin-top: 19px;
+  }
+}
+
+.contact__item {
+}
+
+.contact-control {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  @include mq(md) {
+    flex-direction: row;
+    gap: 10px;
+  }
+}
+
+.contact-control__head {
+  @include mq(md) {
+    width: 180px;
+    flex-shrink: 0; // 画面幅が狭くなっても画像の幅が縮小されないようにする
+  }
+}
+
+.form-label {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  background: rgba($main-color, 0.7); // opacity: 0.7と同じ
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  padding-block: 4px;
+  padding-inline: 16px;
+
+  @include mq(md) {
+    width: 100%;
+    justify-content: center; // flexboxの要素を左右中央寄せにする
+    font-size: 18px;
+    padding-top: 5px;
+    padding-bottom: 4px;
+    padding-inline: 4px;
+    clip-path: polygon(0% 0%, 97% 0, 100% 50%, 97% 100%, 0% 100%);
+  }
+}
+
+.form-label--required {
+  color: #e7728e;
+  font-size: 10px;
+  font-weight: 600;
+
+  @include mq(md) {
+    font-size: 12px;
+  }
+}
+
+.contact-control__input {
+  @include mq(md) {
+    flex-grow: 1; // 残りの空きスペースを全て使用する
+  }
+}
+
+.form-text {
+  width: 100%;
+  height: 40px;
+  border: 0;
+  background: #fff;
+  box-shadow: 5px 6px 16px 0px rgba(96, 96, 96, 0.16);
+
+  &:focus {
+    outline: $main-color auto 1px;
+    box-shadow: 5px 6px 16px 0px rgba($main-color, 0.16);
+  }
+}
+
+.contact-control__radios {
+  display: flex;
+  align-items: center;
+}
+
+.form-radio {
+  position: relative;
+}
+
+// ラジオボタンのカスタマイズ
+.form-radio__input {
+  // ラジオボタンの幅と高さを1pxにすることで、視覚的にほぼ見えない状態になり、クリック可能な小さな領域として残る。それを非表示にする。擬似クラスCheckedでカスタマイズを行う。
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip: rect(
+    0,
+    0,
+    0,
+    0
+  ); // top, right, bottom, left。全部0だと切り取る範囲がないという意味。画像全体が非表示になる。元の画像がそのまま表示されるわけではない。
+  overflow: hidden; // 後からスタイルが変更された時にclipで指定した非表示の箇所が表示されてしまう可能性がある。それを防ぐために確実に非表示にする指定をしている。
+
+  // ラジオボタンがチェックされた時のスタイル
+  &:checked + .form-radio__text {
+    background: $main-color;
+    color: #fff;
+  }
+
+  &:focus + .form-radio__text {
+    outline: $main-color auto 1px;
+    box-shadow: 5px 6px 16px 0px rgba($main-color, 0.32);
+  }
+}
+
+.form-radio__text {
+  color: $main-color;
+  font-weight: 300;
+  letter-spacing: 0.026px;
+  border: 1px solid #fff;
+  background: #fff;
+  width: 80px;
+  height: 40px;
+  display: grid; // グリッドレイアウト（グリッドコンテナ）を作成する
+  place-items: center; // グリッドアイテムを上下左右中央寄せにする
+}
+
+.form-textarea {
+  width: 100%;
+  height: 122px;
+  border: 0;
+  background: #fff;
+  box-shadow: 5px 6px 16px 0px rgba(96, 96, 96, 0.16);
+  resize: vertical; // テキストエリアのリサイズを縦方向のみにする。
+
+  &:focus {
+    outline: $main-color auto 1px;
+    box-shadow: 5px 6px 16px 0px rgba($main-color, 0.16);
+  }
+}
+
+.contact__footer {
+  margin-top: 28px;
+
+  @include mq(md) {
+    margin-top: 32px;
+  }
+}
+
+.contact__privacy {
+  text-align: center;
+}
+
+.form-checkbox {
+  position: relative;
+}
+
+.form-checkbox__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip: rect(0, 0, 0, 0);
+  overflow: hidden;
+
+  &:checked + .form-checkbox__text {
+    &::after {
+      opacity: 1;
+    }
+  }
+
+  &:focus + .form-checkbox__text {
+    &::before {
+      outline: $main-color auto 1px;
+      box-shadow: 5px 6px 16px 0px rgba($main-color, 0.16);
+    }
+  }
+}
+
+.form-checkbox__text {
+  font-weight: 300;
+  padding-left: 30px;
+
+  a {
+    text-decoration-line: underline;
+    color: $main-color;
+    font-weight: 300;
+  }
+
+  // ボッククスとチェックマークの位置を調整
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    inset-block: 0; // top:0; bottom:0を指定している。inset-block: 0;は、要素を親要素の上端と下端にぴったりとくっつけることを意味する。これにより、要素が親要素（.form-checkbox）の上下の端に配置され、margin-block: auto;を使用することで、要素が上下中央に寄せられます。
+    margin-block: auto; // 上下中央寄せ
+  }
+
+  // チェックボックスの枠
+  &::before {
+    width: 22px;
+    height: 22px;
+    border: 1px solid $main-color;
+    background: #fff;
+  }
+
+  // チェックマーク
+  &::after {
+    opacity: 0;
+    width: 19.414px;
+    height: 14.621px;
+    left: 1.29px;
+    background-image: url("../img/check-icon.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain;
+  }
+}
+
+.contact__submit {
+  margin-top: 23px;
+  text-align: center;
+
+  @include mq(md) {
+    margin-top: 44px;
+  }
+}
+
+.footer {
+  padding-block: 40px 7px;
+  background: #f7f7f7;
+
+  @include mq(md) {
+    padding-bottom: 14px;
+  }
+}
+
+.footer__inner {
+  padding-inline: 52.5px;
+}
+
+.footer__logo {
+  a {
+    img {
+      width: 120px;
+      display: block;
+      margin-inline: auto; // ブロック要素の左右中央寄せ
+
+      @include mq(md) {
+        transition: opacity 0.3s; // 変化させたいもの（透過度、変化にかかる時間）を指定する
+
+        &:hover {
+          opacity: 0.6; // hover時に透過度を変化させる
+        }
+      }
+    }
+  }
+}
+
+.footer__menu-items {
+  margin-top: 17px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+
+  @include mq(md) {
+    flex-direction: row;
+    gap: 32px;
+    justify-content: center;
+  }
+}
+
+.footer__menu-item {
+}
+
+.footer__menu-link {
+  font-size: 12px;
+  font-weight: 300;
+
+  @include mq(md) {
+    transition: opacity 0.3s;
+
+    &:hover {
+      opacity: 0.6;
+    }
+  }
+}
+
+.footer__sns-items {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+
+  @include mq(md) {
+    margin-top: 12px;
+  }
+}
+
+.footer__sns-item {
+}
+
+.footer__sns-link {
+  img {
+  }
+  @include mq(md) {
+    transition: opacity 0.3s;
+
+    &:hover {
+      opacity: 0.6;
+    }
+  }
+}
+
+.footer__copyright {
+  margin-top: 23px;
+  font-size: 12px;
+  font-weight: 300;
+  text-align: center;
+
+  @include mq(md) {
+    margin-top: 28px;
+  }
+
+  small {
+    color: #888;
+    font-size: inherit;
+  }
+}
+
+.parent {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  background-color: lightblue;
+}
